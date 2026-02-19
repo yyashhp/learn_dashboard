@@ -1,4 +1,4 @@
-import Fuse from 'fuse.js';
+import Fuse, { type IFuseOptions } from 'fuse.js';
 
 export interface SearchItem {
   id: string;
@@ -16,7 +16,7 @@ export interface SearchItem {
 let fuseInstance: Fuse<SearchItem> | null = null;
 let indexedItems: SearchItem[] = [];
 
-const FUSE_OPTIONS: Fuse.IFuseOptions<SearchItem> = {
+const FUSE_OPTIONS: IFuseOptions<SearchItem> = {
   keys: [
     { name: 'title', weight: 0.4 },
     { name: 'description', weight: 0.2 },

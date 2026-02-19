@@ -40,6 +40,7 @@ export default async function TopicPage({ params }: PageProps) {
 
   const topicWithProgress = {
     ...topic,
+    difficulty: topic.difficulty as 'beginner' | 'intermediate' | 'advanced',
     progress: progress
       ? {
           status: progress.status as 'not_started' | 'in_progress' | 'completed',
@@ -92,7 +93,7 @@ export default async function TopicPage({ params }: PageProps) {
       </nav>
 
       {/* Header with client complete button */}
-      <MarkCompleteButton topic={topicWithProgress} />
+      <MarkCompleteButton topic={topicWithProgress as unknown as import('@/types/topic').TopicWithProgress} />
 
       {/* Key takeaways */}
       {topic.keyTakeaways.length > 0 && (
@@ -117,7 +118,7 @@ export default async function TopicPage({ params }: PageProps) {
         <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Key Formulas</h3>
           <div className="space-y-3">
-            {topic.formulas.map((f, i) => (
+            {(topic.formulas as import('@/types/topic').TopicFormula[]).map((f, i) => (
               <div key={i} className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
                 <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">{f.name}</p>
                 <MarkdownRenderer content={`$$${f.latex}$$`} />
@@ -161,7 +162,7 @@ export default async function TopicPage({ params }: PageProps) {
             {questions.map((q, i) => (
               <QuestionCard
                 key={q.id}
-                question={q as Parameters<typeof QuestionCard>[0]['question']}
+                question={q as unknown as Parameters<typeof QuestionCard>[0]['question']}
                 index={i}
                 total={questions.length}
               />
@@ -172,7 +173,7 @@ export default async function TopicPage({ params }: PageProps) {
 
       {/* Related topics */}
       {relatedTopics.length > 0 && (
-        <RelatedTopics topics={relatedTopics as Parameters<typeof RelatedTopics>[0]['topics']} />
+        <RelatedTopics topics={relatedTopics as unknown as Parameters<typeof RelatedTopics>[0]['topics']} />
       )}
 
       {/* Sources */}
