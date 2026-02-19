@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Topic {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String?
+  content     String
+
+  parentId   String?
+  parent     Topic?  @relation("TopicHierarchy", fields: [parentId], references: [id])
+  children   Topic[] @relation("TopicHierarchy")
+  level      Int
+  orderIndex Int
+
+  difficulty       String
+  tags             String  // JSON array stored as string
+  estimatedMinutes Int
+
+  sourceUrls String  // JSON array stored as string
+  sourceType String
+
+  publishedAt DateTime?
+
+  keyTakeaways String  // JSON array stored as string
+  formulas     String? // JSON array stored as string
+
+  questions Question[]
+  progress  UserProgress[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Question {
+  id      String @id @default(cuid())
+  topicId String
+  topic   Topic  @relation(fields: [topicId], references: [id])
+
+  questionText String
+  difficulty   String
+  orderIndex   Int
+
+  hints    String  // JSON array stored as string
+  solution String  // JSON stored as string
+  metadata String  // JSON stored as string
+
+  attempts QuestionAttempt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserProgress {
+  id      String @id @default(cuid())
+  userId  String @default("local_user")
+  topicId String
+  topic   Topic  @relation(fields: [topicId], references: [id])
+
+  status      String
+  timeSpent   Int      @default(0)
+  lastVisited DateTime @default(now())
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  notes       String?
+
+  @@unique([userId, topicId])
+}
+
+model QuestionAttempt {
+  id         String   @id @default(cuid())
+  userId     String   @default("local_user")
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+
+  hintsUsed   Int      @default(0)
+  correct     Boolean?
+  timeSpent   Int
+  attemptedAt DateTime @default(now())
+
+  @@index([userId, questionId])
+}
+
+model LearningPath {
+  id             String @id @default(cuid())
+  name           String
+  description    String
+  level          String
+  topicSequence  String // JSON array stored as string
+  estimatedHours Int
+  icon           String @default("BookOpen")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
